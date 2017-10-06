@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  .main.container.clearfix
+    .row
+      .col-md-8.col-md-offset-2
+        h1.display-4
+          img.avatar.img-circle.hidden-xs-down(src='/images/avatar.png', alt='avatar')
+          | #{name}
+    .row
+      .col-md-8.col-md-offset-2
+        a.btn.btn-info(href='upload') Upload Photos
+        a.btn.btn-secondary-outline(href='/logout') Log out

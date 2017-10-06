@@ -1,0 +1,20 @@
+extends layout
+
+block content
+  .main.container
+    ul.photosContainer
+      if photos.length
+        each val in photos
+          li.photo
+            img(src= 'images/uploads/'+val['filename'] width='350px' alt= val['originalname'])
+            p= 'photo name: '+val['originalname']
+            .tags
+              p= 'photo tags: '+val['tags']
+            .delete
+              form(method='POST' action='/delete')
+                input(type='hidden' name='photoId' value= val['_id'])
+                input(type='hidden' name='filename' value= val['filename'])
+                button.btn.btn-primary(type='submit') Delete This Image
+      else
+        h1.center You deleted them all!
+        a.btn.btn-info-outline(href='upload') Upload some more?

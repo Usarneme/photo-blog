@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  .main.container.text-xs-center
+    h1.display-3 View &amp; Share Photos
+    p.lead You wanna see something cool?
+    a.btn.btn-info-outline.btn-lg(href='/#photosContainer') See Photos!
+  .main.container
+    ul#photosContainer
+      each val, index in photos
+        li.photo
+          img(src= 'images/uploads/'+photos[index].filename width='350px' alt= photos[index].originalname id= photos[index]._id)
+          p= 'photo name: '+photos[index].originalname
+          .tags
+            p= 'photo tags: '+photos[index].tags

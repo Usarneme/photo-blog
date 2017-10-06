@@ -1,0 +1,16 @@
+nav.navbar.navbar-fixed-top.navbar-dark.bg-inverse
+  button.navbar-toggler.hidden-md-up.pull-xs-right(type='button', data-toggle='collapse', data-target='#navbar') &#x2630;
+  #navbar.navbar-nav.collapse.navbar-toggleable-sm
+    .container
+      a.navbar-brand(href='/')
+        i.icn-logo.material-icons camera_enhance
+        | Photo-blog
+      .nav-items.clearfix
+      a.btn.nav-item.nav-link(href='register') Register
+      a.btn.nav-item.nav-link(href='login') Login
+      if currentUser
+        a.btn.nav-item.nav-link(href='upload') Upload Photos
+        a.btn.nav-item.nav-link(href='delete') Delete Photos
+        div
+          img.avatar.img-circle.hidden-xs-down(src='/images/avatar.png', alt='avatar')
+          a.btn.btn-light.pull-md-right(href='/logout') Log out
