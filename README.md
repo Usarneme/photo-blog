@@ -3,7 +3,7 @@
 
 #### Utilizes
     NodeJS `nodemon`
-    ExpressJS Web Frameworker
+    ExpressJS Web Framework
     MongoDB `mongod` `mongo`
     Pug templates for server side rendering
 
