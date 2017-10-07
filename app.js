@@ -40,7 +40,6 @@ app.set('views', __dirname + '/views');
 
 // include routes 
 var routes = require('./routes/index');
-// TODO routes.db = db;
 app.use('/', routes);
 
 // catch 404 and forward to error handler

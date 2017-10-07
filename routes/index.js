@@ -9,6 +9,8 @@ var mid = require('../middleware');
 
 // File system to delete files from /public/images/uploads/ directory
 var fs = require('fs');
+// child_process.exec to allow creating thumbnail images upon upload
+var childProcess = require('child_process');
 // Multer handles multipart form data uploads (for photo files)
 var multer = require('multer');
 // Sets Multer to store files to disk
@@ -125,8 +127,20 @@ router.post('/upload', mid.requiresLogin, upload, function(req, res, next) {
       if(error) {
         return next(error);
       } else {
-        msg = 'Sucessfully Uploaded: '+req.file.originalname+'! With tags: '+tagArray || '(none)';
-        return res.render('upload',  { title: 'Upload', msg: msg } );        
+        // After original file is uploaded, create thumbnails and preview images 
+        // `epg-prep path/to/photos` per https://github.com/timmydoza/express-photo-gallery
+        childProcess.exec('epg-prep public/images/uploads/', function(error, stdout, stderr) {
+          console.log('Creating thumbnail images... '+stdout);
+          if(error) {
+            var err = new Error('Failure to create thumbnails!');
+            err.status = 500;
+            return next(err);
+          } else {
+            console.log('Created thumbnail and preview image sizes!');
+            msg = 'Sucessfully Uploaded: '+req.file.originalname+'! With tags: '+tagArray || '(none)';
+            return res.render('upload',  { title: 'Upload', msg: msg } );
+          }
+        })
       }
     })
   } else { // there was no req.file submitted
@@ -228,13 +242,28 @@ router.post('/delete', mid.requiresLogin, function(req, res, next) {
           err.status = 404;
           return next(err);
         }
-        // Successfully removed file from the database...delete from folder
+        // Successfully removed file from the database...
+        // Delete from folder the original, thumbnail and preview images
         var photoPath = './public/images/uploads/'+req.body.filename;
+        var thumbPath = './public/images/uploads/thumbs/'+req.body.filename;
+        var previewsPath = './public/images/uploads/previews/'+req.body.filename;
         fs.unlink(photoPath, function(err, result) {
           if(err) {
             return next(err);
           } else {
-            return res.redirect('/delete');
+            fs.unlink(thumbPath, function(err, result) {
+              if(err) {
+                return next(err);
+              } else {
+                fs.unlink(previewsPath, function(err, result) {
+                  if(err) {
+                    return next(err);
+                  } else {
+                    return res.redirect('/delete');
+                  }
+                })
+              }
+            })
           }
         })
     });
@@ -245,8 +274,7 @@ router.post('/delete', mid.requiresLogin, function(req, res, next) {
   }
 })
 
-// GET / 
-router.get('/', function(req, res, next) {
+router.get('/photos', function(req, res, next) {
   Photo.find(function(err, photos) {
     if (err) {
       err.message = 'Server Error locating images.';
@@ -257,8 +285,13 @@ router.get('/', function(req, res, next) {
       err.status = 404;
       return next(err);
     }
-    res.render('index', { title: 'Home', photos: photos });
+    return res.render('photos', { title: 'Photos', photos: photos });
   })
+})
+
+// GET / 
+router.get('/', function(req, res, next) {
+  return res.render('index', { title: 'Home' });  
 }); 
 
 module.exports = router;
