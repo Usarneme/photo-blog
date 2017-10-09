@@ -285,9 +285,52 @@ router.get('/photos', function(req, res, next) {
       err.status = 404;
       return next(err);
     }
-    return res.render('photos', { title: 'Photos', photos: photos });
-  })
-})
+    var allTags = [];
+    for(let i=0; i<photos.length; i++) {
+      if(photos[i].tags) {
+        photos[i].tags.forEach(function(tag) {
+          allTags.push(tag);
+        })
+      }
+    }
+    // Remove empty taglists
+    allTags = allTags.join().split(/[ ,]+/).filter(Boolean);
+    var uniqueTags = Array.from(new Set(allTags));
+    // console.log('About to render photos with tag list: '+uniqueTags+' and length: '+uniqueTags.length);
+    return res.render('photos', { title: 'Photos', photos: photos, tags: uniqueTags });
+  });
+});
+
+// POST /photos
+// Filters photos with tags specified from tagList POST request
+router.post('/photos', function(req, res, next) {
+  console.log('/photos POST with tagList: '+req.body.tagList);
+  if(req.body.tagList) {
+    var tagArray = req.body.tagList.split(/[ ,]+/).filter(Boolean);
+    console.log('Sending db request with tag array: '+tagArray)
+    Photo.find({ tags: {$in: tagArray} 
+    }, (err, photos) => {
+      if(err) {
+        err.message = 'Server error finding image tags.';
+        return next(err);
+      }
+      if(!photos) {
+        var err = new Error('No images have those tags.');
+        err.status = 404;
+        return next(err);
+      }
+      // Remove empty taglists
+      tagArray = tagArray.join().split(/[ ,]+/).filter(Boolean);
+      console.log('all tags after filter: '+tagArray);
+
+      var uniqueTags = Array.from(new Set(tagArray));
+      console.log('About to render photos with tag list: '+uniqueTags+' and photos: '+photos);
+      return res.render('photos', { title: 'Photos', photos: photos, tags: uniqueTags });
+    });
+  } else {
+    return res.redirect('/photos');
+  }
+});
 
 // GET / 
 router.get('/', function(req, res, next) {

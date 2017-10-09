@@ -5,8 +5,8 @@ head
   meta(http-equiv='x-ua-compatible', content='ie=edge')
   title Photo-blog | #{title}
   link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css', integrity='sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd', crossorigin='anonymous')
-  link(href='https://fonts.googleapis.com/icon?family=Material+Icons', rel='stylesheet')
-  link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.1.25/jquery.fancybox.min.css")
+  link(rel='stylesheet', href='https://fonts.googleapis.com/icon?family=Material+Icons')
+  link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.1.25/jquery.fancybox.min.css')
   link(rel='stylesheet', href='/stylesheets/style.css')
 
 body
@@ -14,18 +14,31 @@ body
   include navbar
 
   .main.container
-    .pull-left-xs 
-      h3 Tags
-      p Tag1, tag2, tag3
     #relative-caption
+      h3 Photos
       #lg-fade
         each val in photos
           a(href= '../images/uploads/'+val['filename'] alt= val['originalname'] id= val['_id'] data-fancybox="gallery-group" data-caption= val['originalname']+'<br/>tags: '+val['tags'])
             img(src= '../images/uploads/thumbs/'+val['filename'] alt= val['originalname'] id= val['_id']+'-thumbnail')
+    .pull-left-xs 
+      p Filter by tags (separate with comma or space)
+        form(method='POST' action='/photos')
+          input.form-control(id='tagInput' type='text' placeholder='enter tags' name='tagList')
+          button.btn.btn-primary(type='submit') Filter by tags
+
+      p All tags in this photo set
+      each tag in tags
+        script.
+          var tagInput = document.getElementById('tagInput');
+          // Function on a Tag type button click adds that tag to the tags filter field input
+          var addTag = function(tagg) {
+              tagInput.value = tagInput.value + ' ' + tagg.textContent;
+          }
+        button.btn.btn-info-outline(type='button' id=tag onclick=`addTag( ${tag} )` ) #{tag}
 
   // footer
   p.foot.text-xs-center &copy; 2017
 
-  script(src="//code.jquery.com/jquery-3.2.1.min.js")
+  script(src='https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js')
   script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js', integrity='sha384-vZ2WRJMwsjRMW/8U7i6PWi6AlO1L79snBrmgiDpgIWJ82z8eA5lenwvxbMV1PAh7', crossorigin='anonymous')
   script(src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.1.25/jquery.fancybox.min.js")

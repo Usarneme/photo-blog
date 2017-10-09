@@ -2,7 +2,7 @@
 /* Base Styles */
 
 body { 
-	background: url('../images/overlay.png'), url('../images/overlay_dark.png'), url('../images/overlay_dark.png'), url('../images/overlay_dark.png'), url('../images/overlay_dark.png'), #1d2a33 url('../images/bg.jpg');
+	background: #1d2a33;
 	background-size: cover; 
 }
 
@@ -32,6 +32,15 @@ li.photo {
 .main {
 	color: #fff;
 	min-height: calc(100vh - 34px);
+}
+#lg-fade {
+	display: flex;
+    flex-wrap: wrap;
+	justify-content: center;
+}
+#lg-fade > a {
+	margin: 5px;
+	padding: 5px;
 }
 .foot {
 	font-size: .85rem;
