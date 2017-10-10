@@ -14,27 +14,40 @@ body
   include navbar
 
   .main.container
-    #relative-caption
-      h3 Photos
-      #lg-fade
-        each val in photos
-          a(href= '../images/uploads/'+val['filename'] alt= val['originalname'] id= val['_id'] data-fancybox="gallery-group" data-caption= val['originalname']+'<br/>tags: '+val['tags'])
-            img(src= '../images/uploads/thumbs/'+val['filename'] alt= val['originalname'] id= val['_id']+'-thumbnail')
-    .pull-left-xs 
-      p Filter by tags (separate with comma or space)
-        form(method='POST' action='/photos')
-          input.form-control(id='tagInput' type='text' placeholder='enter tags' name='tagList')
-          button.btn.btn-primary(type='submit') Filter by tags
+    .row
+      .col.col-xs-3
+        p
+          form(method='POST' action='/photos')
+            input.form-control(id='tagInput' type='text' placeholder='enter tags' name='tagList')
+            button.btn.btn-primary(type='submit') Filter by tags
+        p All tags in this photo set
+        each tag in tags
+          script.
+            var tagInput = document.getElementById('tagInput');
+            // Function on a Tag type button click adds that tag to the tags filter field input
+            var addTag = function(tagg) {
+              var theButton = document.getElementById(tagg.id);
+              // Default is outline style, if outline, remove outline and add to filter list
+              if(theButton.className.indexOf('outline') !== -1) {
+                theButton.className = "btn btn-info";
+                tagInput.value = tagInput.value + ' ' + tagg.id;
+              } else {
+                // No outline, so add outline and remove from filter list
+                theButton.className = "btn btn-info-outline";
+                var dex = tagInput.value.indexOf(tagg.id);
+                var front = tagInput.value.substring(0, dex);
+                var back = tagInput.value.substring(dex+tagg.id.length, tagInput.value.length);
+                tagInput.value = front+back;
+              }//end of else contains selected
+            }//end of addTag func
+          button.btn.btn-info-outline(type='button' id=tag onclick=`addTag( ${tag} )` ) #{tag}
 
-      p All tags in this photo set
-      each tag in tags
-        script.
-          var tagInput = document.getElementById('tagInput');
-          // Function on a Tag type button click adds that tag to the tags filter field input
-          var addTag = function(tagg) {
-              tagInput.value = tagInput.value + ' ' + tagg.textContent;
-          }
-        button.btn.btn-info-outline(type='button' id=tag onclick=`addTag( ${tag} )` ) #{tag}
+      .col.col-xs-9
+        h3 Photos
+        #lg-fade
+          each val in photos
+            a(href= '../images/uploads/'+val['filename'] alt= val['originalname'] id= val['_id'] data-fancybox="gallery-group" data-caption= val['originalname']+'<br/>tags: '+val['tags'])
+              img(src= '../images/uploads/thumbs/'+val['filename'] alt= val['originalname'] id= val['_id']+'-thumbnail') 
 
   // footer
   p.foot.text-xs-center &copy; 2017
